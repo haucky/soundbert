@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Soundbert</title>
+  <meta name="theme-color" content="#FFF6EA">
+  <meta name="description" content="Geräusche aufnehmen, sammeln und zu Geschichten zusammensetzen – für kleine Kinder und ihre Eltern.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preload" href="fonts/nunito-latin-900-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <main id="view" aria-live="polite"></main>
+    <nav class="tabbar" aria-label="Bereiche">
+      <button class="tab" data-action="tab" data-tab="kiste" aria-label="Geräusche-Kiste"></button>
+      <button class="tab" data-action="tab" data-tab="geschichte" aria-label="Geschichte"></button>
+      <button class="tab" data-action="tab" data-tab="zauber" aria-label="Stimmen-Zauber"></button>
+    </nav>
+  </div>
+  <div id="overlay"></div>
+  <div id="toast" role="status"></div>
+  <noscript>Soundbert braucht JavaScript.</noscript>
+  <script src="app.js"></script>
+</body>
+</html>
