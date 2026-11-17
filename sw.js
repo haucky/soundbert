@@ -1,6 +1,6 @@
 /* Service Worker: hält die App offline verfügbar.
    Bei jeder Änderung an den Dateien VERSION hochzählen. */
-const VERSION = 'soundbert-v2';
+const VERSION = 'soundbert-v3';
 const ASSETS = [
   './',
   'index.html',

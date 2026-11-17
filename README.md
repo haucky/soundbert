@@ -9,12 +9,12 @@ Live: https://haucky.github.io/soundbert/
 - **Kiste**: Jedes Geräusch ist ein Bild mit einer Aufnahme. Antippen spielt es ab, das Mikrofon-Feld nimmt ein neues auf (erst Bild wählen, dann aufnehmen, danach spielt es sofort einmal ab).
 - **Geschichte**: Eine Reihenfolge von Geräuschen aus der Kiste. „Neues Bild“ wählt ein Geräusch aus der Kiste oder nimmt ein neues auf. „Ganze Geschichte“ spielt alles nacheinander ab. Wird ein Geräusch neu aufgenommen, ändert es sich überall, wo es vorkommt.
 - **Zauber**: Etwas aufnehmen und als Riese, Maus, Höhlen-Echo oder Roboter abspielen (Web Audio).
-- **Hör-Modus** (Ohr-Symbol oben): schwarzer Bildschirm. Irgendwo **halten = aufnehmen**, **tippen = letztes Geräusch abspielen**. Vibration statt Bild. Beenden: × gedrückt halten oder Zurück-Taste. Aufnahmen landen mit dem Ohr-Bild in der Kiste.
+- **Hör-Modus** (Ohr-Symbol oben): schwarzer Bildschirm. Irgendwo **halten = aufnehmen**, **tippen = letztes Geräusch abspielen**. Vibration statt Bild. Beenden: × gedrückt halten oder Zurück-Taste. Aufnahmen landen mit dem Ohr-Bild in der Kiste. **Aus der Geschichte geöffnet** spielt Tippen die ganze Geschichte (erneutes Tippen unterbricht nicht), und Halten nimmt ein neues Bild am Ende der Geschichte auf.
 - **Erzählstimme**: In der Geschichte „Erzählen“ antippen und bis zu 60 Sekunden einsprechen. Erzählstimmen gehören nur zur Geschichte, nicht zur Kiste.
 
 ## Schneiden & Angleichen
 
-Jede Aufnahme wird automatisch geschnitten (Stille am Anfang/Ende) und in der Lautstärke angeglichen. Die **Originalaufnahme bleibt unverändert**; gespeichert werden nur Schnittpunkte und Verstärkung. Im Eltern-Modus öffnet die Schere den Editor: Anfang und Ende auf der Wellenform verschieben, „Probehören“, „Automatisch“, „Alles“, „Bild ändern“.
+Jede Aufnahme wird automatisch geschnitten (Stille am Anfang/Ende; Knackser vom Drücken in den ersten 0,25 s bzw. letzten 0,2 s und kurze, abgesetzte Geräuschfetzen am Rand werden ignoriert) und in der Lautstärke angeglichen. Die **Originalaufnahme bleibt unverändert**; gespeichert werden nur Schnittpunkte und Verstärkung. Im Eltern-Modus ändert das Bild-Symbol auf einer Kachel das Bild (60 Bilder in 6 Gruppen); die Schere öffnet den Editor: Anfang und Ende auf der Wellenform verschieben, „Probehören“, „Automatisch“, „Alles“, „Bild ändern“, „Neu aufnehmen“. Ältere, nicht von Hand geschnittene Aufnahmen werden beim Start mit dem verbesserten Verfahren neu geschnitten.
 
 ## Teilen & Sichern (Eltern-Modus › ⋯)
 

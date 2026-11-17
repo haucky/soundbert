@@ -27,32 +27,79 @@
 
   const EYES = (y) => `<path d="M9 ${y}h.01M15 ${y}h.01" stroke-width="2.8"/>`;
 
+  // Bilder nach Gruppen. id bleibt stabil (steht in Sicherungen), label ist der Name in der Kiste.
+  const CATS = [
+    ['tiere', 'Tiere'], ['natur', 'Natur & Wetter'], ['fahrzeuge', 'Fahrzeuge'],
+    ['zuhause', 'Zuhause'], ['menschen', 'Menschen & Gefühle'], ['musik', 'Musik & Spiel'],
+  ];
   const PICS = [
-    { id: 'ohr', label: 'Geräusch', c: 6, d: '<path d="M7 9a5 5 0 0 1 10 0c0 3-3 4-3 7a3 3 0 0 1-5.5 1.6"/><path d="M10 9a2 2 0 0 1 4 0c0 1.5-1.5 2-1.5 3.5"/>' },
-    { id: 'hund', label: 'Wuff', c: 0, d: '<circle cx="7" cy="8" r="1.8"/><circle cx="12" cy="6" r="1.8"/><circle cx="17" cy="8" r="1.8"/><path d="M12 11c-3 0-5.5 3.5-5.5 6 0 1.8 1.6 2.6 3 2 1.2-.5 1.8-.6 2.5-.6s1.3.1 2.5.6c1.4.6 3-.2 3-2 0-2.5-2.5-6-5.5-6z"/>' },
-    { id: 'katze', label: 'Miau', c: 4, d: '<path d="M5 19c-1.5-2-1.5-6 0-8V4l4 3h6l4-3v7c1.5 2 1.5 6 0 8-1.6 1.6-4 2-7 2s-5.4-.4-7-2z"/>' + EYES(13) + '<path d="M11 16.5l1 .8 1-.8"/>' },
-    { id: 'vogel', label: 'Piep', c: 5, d: '<path d="M4 15c3 4 10 4 13 0l3-6-4 1a4 4 0 0 0-7 2c-2 0-4 1-5 3z"/><path d="M14 9h.01" stroke-width="2.6"/>' },
-    { id: 'fisch', label: 'Blubb', c: 5, d: '<path d="M3 12c3-5 10-6 14 0-4 6-11 5-14 0z"/><path d="M17 12l4-4v8z"/><path d="M8 11h.01" stroke-width="2.6"/>' },
-    { id: 'donner', label: 'Donner', c: 1, d: '<path d="M7 17a4 4 0 1 1 .8-7.9A5.5 5.5 0 0 1 18 10a3.5 3.5 0 0 1 0 7"/><path d="M13 13l-2 4h3l-2 4"/>' },
-    { id: 'regen', label: 'Regen', c: 1, d: '<path d="M7 15a4 4 0 1 1 .8-7.9A5.5 5.5 0 0 1 18 8a3.5 3.5 0 0 1 0 7"/><path d="M8 18l-1 2M12 18l-1 2M16 18l-1 2"/>' },
-    { id: 'sonne', label: 'Sonne', c: 2, d: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>' },
-    { id: 'mond', label: 'Mond', c: 2, d: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>' },
-    { id: 'stern', label: 'Stern', c: 2, d: '<path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4l-5.3 3 1.2-6-4.5-4.1 6-.7z"/>' },
-    { id: 'wasser', label: 'Platsch', c: 5, d: '<path d="M12 3s-6 7-6 11a6 6 0 0 0 12 0c0-4-6-11-6-11z"/>' },
-    { id: 'haus', label: 'Haus', c: 5, d: '<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>' },
-    { id: 'tuer', label: 'Tür', c: 2, d: '<rect x="6" y="3" width="12" height="18" rx="1.5"/><circle cx="15" cy="12.5" r="1"/>' },
-    { id: 'zug', label: 'Zug', c: 4, d: '<rect x="5" y="4" width="14" height="12" rx="3"/><path d="M5 11h14"/><circle cx="9" cy="19" r="1.6"/><circle cx="15" cy="19" r="1.6"/><path d="M8 7.5h8"/>' },
-    { id: 'auto', label: 'Auto', c: 0, d: '<path d="M3 16v-4l2-5h14l2 5v4z"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/><path d="M3 12h18"/>' },
-    { id: 'glocke', label: 'Bimmel', c: 2, d: '<path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/>' },
-    { id: 'trommel', label: 'Trommel', c: 0, d: '<ellipse cx="12" cy="9" rx="8" ry="3"/><path d="M4 9v7c0 1.7 3.6 3 8 3s8-1.3 8-3V9"/><path d="M8 3l3 5M16 3l-3 5"/>' },
-    { id: 'musik', label: 'Musik', c: 4, d: '<path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>' },
-    { id: 'lachen', label: 'Lachen', c: 3, d: '<circle cx="12" cy="12" r="9"/><path d="M8 14a4.5 4.5 0 0 0 8 0z"/>' + EYES(9.5) },
-    { id: 'kuss', label: 'Kuss', c: 0, d: '<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>' },
-    { id: 'schlafen', label: 'Schnarch', c: 1, d: '<path d="M4 8h6l-6 7h6"/><path d="M13 4h5l-5 6h5"/><path d="M14 15h4l-4 5h4"/>' },
-    { id: 'fuesse', label: 'Tapp', c: 3, d: '<ellipse cx="8" cy="9" rx="2.5" ry="4"/><ellipse cx="16" cy="15" rx="2.5" ry="4"/>' },
-    { id: 'gespenst', label: 'Buh', c: 4, d: '<path d="M5 20V10a7 7 0 0 1 14 0v10l-2.3-1.5L14.3 20 12 18.5 9.7 20l-2.4-1.5z"/>' + EYES(10.5) },
-    { id: 'uhr', label: 'Tick-Tack', c: 3, d: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>' },
-    { id: 'baum', label: 'Wind', c: 3, d: '<path d="M12 21v-6"/><path d="M12 15c-4 0-7-2.5-7-6a7 7 0 0 1 14 0c0 3.5-3 6-7 6z"/>' },
+    { id: 'ohr', label: 'Geräusch', c: 6, cat: null, d: '<path d="M7 9a5 5 0 0 1 10 0c0 3-3 4-3 7a3 3 0 0 1-5.5 1.6"/><path d="M10 9a2 2 0 0 1 4 0c0 1.5-1.5 2-1.5 3.5"/>' },
+    // Tiere
+    { id: 'hund', label: 'Wuff', c: 0, cat: 'tiere', d: '<circle cx="7" cy="8" r="1.8"/><circle cx="12" cy="6" r="1.8"/><circle cx="17" cy="8" r="1.8"/><path d="M12 11c-3 0-5.5 3.5-5.5 6 0 1.8 1.6 2.6 3 2 1.2-.5 1.8-.6 2.5-.6s1.3.1 2.5.6c1.4.6 3-.2 3-2 0-2.5-2.5-6-5.5-6z"/>' },
+    { id: 'katze', label: 'Miau', c: 4, cat: 'tiere', d: '<path d="M5 19c-1.5-2-1.5-6 0-8V4l4 3h6l4-3v7c1.5 2 1.5 6 0 8-1.6 1.6-4 2-7 2s-5.4-.4-7-2z"/>' + EYES(13) + '<path d="M11 16.5l1 .8 1-.8"/>' },
+    { id: 'kuh', label: 'Muh', c: 3, cat: 'tiere', d: '<path d="M7 9c0-2 2-3 5-3s5 1 5 3v5a5 5 0 0 1-10 0z"/><path d="M7 9L3 7M17 9l4-2"/><ellipse cx="12" cy="15.5" rx="3" ry="2"/>' + EYES(10.5) },
+    { id: 'schaf', label: 'Mäh', c: 6, cat: 'tiere', d: '<path d="M7 10a3 3 0 0 1 5-2 3 3 0 0 1 5 2 3 3 0 0 1 0 5 3 3 0 0 1-5 2 3 3 0 0 1-5-2 3 3 0 0 1 0-5z"/><path d="M9 17v3M15 17v3"/>' },
+    { id: 'schwein', label: 'Oink', c: 0, cat: 'tiere', d: '<circle cx="12" cy="12" r="8"/><ellipse cx="12" cy="14.5" rx="3" ry="2"/><path d="M11 14.5h.01M13 14.5h.01" stroke-width="2.4"/><path d="M6 6.5L5 3.5l3.5 1.5M18 6.5l1-3-3.5 1.5"/>' + EYES(10) },
+    { id: 'pferd', label: 'Wieher', c: 2, cat: 'tiere', d: '<path d="M9 21v-5l-4-2 2-5 4-4 1-3 2 2.5 4 1.5 1 6-2 2v7"/><path d="M12 9h.01" stroke-width="2.6"/>' },
+    { id: 'ente', label: 'Quak', c: 2, cat: 'tiere', d: '<circle cx="11" cy="8" r="3"/><path d="M14 8h3.5l-3.2 1.8"/><path d="M4 14c0 3.5 3 5.5 8 5.5s8-2.5 8-6c-3 1-6 0-8-2-2 1-5 1-8 2.5z"/><path d="M11 7.5h.01" stroke-width="2.6"/>' },
+    { id: 'frosch', label: 'Quaak', c: 3, cat: 'tiere', d: '<path d="M4 15a8 5 0 0 0 16 0c0-3-3-5-8-5s-8 2-8 5z"/><circle cx="8" cy="8" r="2.5"/><circle cx="16" cy="8" r="2.5"/><path d="M9 15c1.5 1 4.5 1 6 0"/>' },
+    { id: 'vogel', label: 'Piep', c: 5, cat: 'tiere', d: '<path d="M4 15c3 4 10 4 13 0l3-6-4 1a4 4 0 0 0-7 2c-2 0-4 1-5 3z"/><path d="M14 9h.01" stroke-width="2.6"/>' },
+    { id: 'hahn', label: 'Kikeriki', c: 0, cat: 'tiere', d: '<path d="M9 20h6M12 20v-3"/><path d="M8 17c-2-3-1-8 2.5-9l.5-3 1.5 2 1.5-2 .5 3c2 1 3 3 2 5l2.5 1-2.5 1c0 2-2 4-4.5 4z"/>' },
+    { id: 'eule', label: 'Huhu', c: 4, cat: 'tiere', d: '<path d="M6 5l2 2h8l2-2v11a6 6 0 0 1-12 0z"/><circle cx="9.5" cy="11" r="2"/><circle cx="14.5" cy="11" r="2"/><path d="M11.5 14l.5 1 .5-1"/>' },
+    { id: 'maus', label: 'Fiep', c: 6, cat: 'tiere', d: '<path d="M4 16a8 6 0 0 1 16 0z"/><circle cx="8" cy="9" r="2.5"/><path d="M20 16c2 0 2 3 0 3"/><path d="M14 12h.01" stroke-width="2.6"/>' },
+    { id: 'biene', label: 'Summ', c: 2, cat: 'tiere', d: '<ellipse cx="12" cy="14" rx="5" ry="6"/><path d="M7.5 12h9M7.5 16h9"/><path d="M12 8c-2-4-6-4-6-1s3 3 6 1zM12 8c2-4 6-4 6-1s-3 3-6 1z"/>' },
+    { id: 'loewe', label: 'Brüll', c: 2, cat: 'tiere', d: '<circle cx="12" cy="12" r="5"/><path d="M12 3l2 2 3-1 .5 3 3 1-1.5 3 1.5 3-3 1-.5 3-3-1-2 2-2-2-3 1-.5-3-3-1 1.5-3L3.5 8l3-1L7 4l3 1z"/><path d="M10 11h.01M14 11h.01" stroke-width="2.6"/><path d="M11 14h2"/>' },
+    { id: 'elefant', label: 'Töröö', c: 1, cat: 'tiere', d: '<path d="M6 18v-6a6 6 0 0 1 12 0v6"/><path d="M12 12v5a2 2 0 0 0 4 0"/><path d="M6 10H3v4h3M18 10h3v4h-3"/><path d="M9.5 11h.01M14.5 11h.01" stroke-width="2.6"/>' },
+    { id: 'fisch', label: 'Blubb', c: 5, cat: 'tiere', d: '<path d="M3 12c3-5 10-6 14 0-4 6-11 5-14 0z"/><path d="M17 12l4-4v8z"/><path d="M8 11h.01" stroke-width="2.6"/>' },
+    // Natur & Wetter
+    { id: 'donner', label: 'Donner', c: 1, cat: 'natur', d: '<path d="M7 17a4 4 0 1 1 .8-7.9A5.5 5.5 0 0 1 18 10a3.5 3.5 0 0 1 0 7"/><path d="M13 13l-2 4h3l-2 4"/>' },
+    { id: 'regen', label: 'Regen', c: 1, cat: 'natur', d: '<path d="M7 15a4 4 0 1 1 .8-7.9A5.5 5.5 0 0 1 18 8a3.5 3.5 0 0 1 0 7"/><path d="M8 18l-1 2M12 18l-1 2M16 18l-1 2"/>' },
+    { id: 'sonne', label: 'Sonne', c: 2, cat: 'natur', d: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>' },
+    { id: 'mond', label: 'Mond', c: 2, cat: 'natur', d: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>' },
+    { id: 'stern', label: 'Stern', c: 2, cat: 'natur', d: '<path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4l-5.3 3 1.2-6-4.5-4.1 6-.7z"/>' },
+    { id: 'baum', label: 'Wind', c: 3, cat: 'natur', d: '<path d="M12 21v-6"/><path d="M12 15c-4 0-7-2.5-7-6a7 7 0 0 1 14 0c0 3.5-3 6-7 6z"/>' },
+    { id: 'blatt', label: 'Raschel', c: 3, cat: 'natur', d: '<path d="M5 19C5 10 10 5 20 4c-1 10-6 15-15 15z"/><path d="M5 19l9-9"/>' },
+    { id: 'blume', label: 'Blume', c: 0, cat: 'natur', d: '<circle cx="12" cy="8" r="2"/><path d="M12 6c0-2.5 3-2.5 3 0 2.5 0 2.5 3 0 3 0 2.5-3 2.5-3 0-2.5 0-2.5-3 0-3"/><path d="M12 11v10M12 17c-2-2-4-2-5-1M12 18c2-2 4-2 5-1"/>' },
+    { id: 'wasser', label: 'Platsch', c: 5, cat: 'natur', d: '<path d="M12 3s-6 7-6 11a6 6 0 0 0 12 0c0-4-6-11-6-11z"/>' },
+    { id: 'meer', label: 'Rauschen', c: 5, cat: 'natur', d: '<path d="M3 9c3-2 6 2 9 0s6-2 9 0M3 14c3-2 6 2 9 0s6-2 9 0M3 19c3-2 6 2 9 0s6-2 9 0"/>' },
+    { id: 'schnee', label: 'Schnee', c: 1, cat: 'natur', d: '<path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9"/><path d="M10 5l2 2 2-2M10 19l2-2 2 2"/>' },
+    { id: 'feuer', label: 'Feuer', c: 0, cat: 'natur', d: '<path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-3 2-4 2-7 1 1 2 2 2 4 1-2 1-4 1-7z"/>' },
+    // Fahrzeuge
+    { id: 'auto', label: 'Auto', c: 0, cat: 'fahrzeuge', d: '<path d="M3 16v-4l2-5h14l2 5v4z"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/><path d="M3 12h18"/>' },
+    { id: 'zug', label: 'Zug', c: 4, cat: 'fahrzeuge', d: '<rect x="5" y="4" width="14" height="12" rx="3"/><path d="M5 11h14"/><circle cx="9" cy="19" r="1.6"/><circle cx="15" cy="19" r="1.6"/><path d="M8 7.5h8"/>' },
+    { id: 'feuerwehr', label: 'Tatü', c: 0, cat: 'fahrzeuge', d: '<rect x="2" y="8" width="13" height="8" rx="1"/><path d="M15 11h4l3 3v2h-7"/><circle cx="6" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M6 5h4M8 5v3"/>' },
+    { id: 'flugzeug', label: 'Brumm', c: 5, cat: 'fahrzeuge', d: '<path d="M2 13l8-2 4-7h2l-2 7 6 1v2l-6 1 2 5h-2l-4-5-8-1z"/>' },
+    { id: 'boot', label: 'Tuut', c: 5, cat: 'fahrzeuge', d: '<path d="M3 15h18l-2 4H5z"/><path d="M12 15V4l6 8h-6"/>' },
+    { id: 'fahrrad', label: 'Klingel', c: 3, cat: 'fahrzeuge', d: '<circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16l4-7h6l2 7M10 9l3 7H6M15 6h3"/>' },
+    // Zuhause
+    { id: 'haus', label: 'Haus', c: 5, cat: 'zuhause', d: '<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>' },
+    { id: 'tuer', label: 'Tür', c: 2, cat: 'zuhause', d: '<rect x="6" y="3" width="12" height="18" rx="1.5"/><circle cx="15" cy="12.5" r="1"/>' },
+    { id: 'topf', label: 'Klonk', c: 1, cat: 'zuhause', d: '<path d="M5 10h14v7a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3z"/><path d="M3 10h18M9 7h6M12 7V5"/>' },
+    { id: 'essen', label: 'Mampf', c: 0, cat: 'zuhause', d: '<path d="M12 7c-3-2-7 0-7 5 0 4 3 8 5 8 1 0 1.5-.5 2-.5s1 .5 2 .5c2 0 5-4 5-8 0-5-4-7-7-5z"/><path d="M12 7c0-2 1-3 3-4"/>' },
+    { id: 'telefon', label: 'Ring', c: 3, cat: 'zuhause', d: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>' },
+    { id: 'schluessel', label: 'Klimper', c: 2, cat: 'zuhause', d: '<circle cx="8" cy="8" r="4"/><path d="M11 11l9 9M16 16l2-2M18 18l2-2"/>' },
+    { id: 'papier', label: 'Knister', c: 6, cat: 'zuhause', d: '<path d="M5 4h10l4 4v12H5z"/><path d="M15 4v4h4M8 12l3 2 2-3 3 3M8 16h8"/>' },
+    { id: 'uhr', label: 'Tick-Tack', c: 3, cat: 'zuhause', d: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>' },
+    { id: 'zaehne', label: 'Putz', c: 5, cat: 'zuhause', d: '<path d="M4 20L15 9"/><path d="M14 5l5 5 2-2-5-5z"/>' },
+    // Menschen & Gefühle
+    { id: 'papa', label: 'Papa', c: 5, cat: 'menschen', d: '<circle cx="12" cy="7" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>' },
+    { id: 'mama', label: 'Mama', c: 0, cat: 'menschen', d: '<circle cx="12" cy="7" r="4"/><path d="M8 8c0 3-1 5-2 6M16 8c0 3 1 5 2 6"/><path d="M4 21a8 8 0 0 1 16 0"/>' },
+    { id: 'baby', label: 'Baby', c: 4, cat: 'menschen', d: '<circle cx="12" cy="12" r="8"/><path d="M9.5 15.5a3.5 3.5 0 0 0 5 0"/><path d="M12 4c1 1 1 2 0 3"/>' + EYES(11) },
+    { id: 'lachen', label: 'Lachen', c: 3, cat: 'menschen', d: '<circle cx="12" cy="12" r="9"/><path d="M8 14a4.5 4.5 0 0 0 8 0z"/>' + EYES(9.5) },
+    { id: 'singen', label: 'Lalala', c: 4, cat: 'menschen', d: '<circle cx="10" cy="13" r="7"/><circle cx="10" cy="15.5" r="1.5"/><path d="M18 3v6"/><circle cx="16.5" cy="9" r="1.5"/><path d="M7.5 11h.01M12.5 11h.01" stroke-width="2.6"/>' },
+    { id: 'niesen', label: 'Hatschi', c: 1, cat: 'menschen', d: '<circle cx="10" cy="12" r="7"/><path d="M8 15h4"/><path d="M19 9l2-1M19 12h2.5M19 15l2 1"/><path d="M7.5 10h.01M12.5 10h.01" stroke-width="2.6"/>' },
+    { id: 'hand', label: 'Klatsch', c: 2, cat: 'menschen', d: '<path d="M8 13V5a1.5 1.5 0 0 1 3 0v6M11 10V4a1.5 1.5 0 0 1 3 0v7M14 10V5.5a1.5 1.5 0 0 1 3 0V14a7 7 0 0 1-7 7c-3 0-4.5-2-6-4l-2-3a1.5 1.5 0 0 1 2.5-1.5L8 15"/>' },
+    { id: 'fuesse', label: 'Tapp', c: 3, cat: 'menschen', d: '<ellipse cx="8" cy="9" rx="2.5" ry="4"/><ellipse cx="16" cy="15" rx="2.5" ry="4"/>' },
+    { id: 'kuss', label: 'Kuss', c: 0, cat: 'menschen', d: '<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>' },
+    { id: 'schlafen', label: 'Schnarch', c: 1, cat: 'menschen', d: '<path d="M4 8h6l-6 7h6"/><path d="M13 4h5l-5 6h5"/><path d="M14 15h4l-4 5h4"/>' },
+    { id: 'gespenst', label: 'Buh', c: 4, cat: 'menschen', d: '<path d="M5 20V10a7 7 0 0 1 14 0v10l-2.3-1.5L14.3 20 12 18.5 9.7 20l-2.4-1.5z"/>' + EYES(10.5) },
+    // Musik & Spiel
+    { id: 'trommel', label: 'Trommel', c: 0, cat: 'musik', d: '<ellipse cx="12" cy="9" rx="8" ry="3"/><path d="M4 9v7c0 1.7 3.6 3 8 3s8-1.3 8-3V9"/><path d="M8 3l3 5M16 3l-3 5"/>' },
+    { id: 'musik', label: 'Musik', c: 4, cat: 'musik', d: '<path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>' },
+    { id: 'glocke', label: 'Bimmel', c: 2, cat: 'musik', d: '<path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/>' },
+    { id: 'troete', label: 'Tröt', c: 3, cat: 'musik', d: '<path d="M3 10v4h3l9 5V5l-9 5z"/><path d="M18 9a4 4 0 0 1 0 6"/>' },
+    { id: 'rassel', label: 'Rassel', c: 5, cat: 'musik', d: '<circle cx="9" cy="9" r="6"/><path d="M13 13l7 7"/><path d="M7 7h.01M11 9h.01M8 11h.01" stroke-width="2.6"/>' },
+    { id: 'ball', label: 'Plopp', c: 0, cat: 'musik', d: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>' },
   ];
   const PIC = Object.fromEntries(PICS.map((p) => [p.id, p]));
   const NARRATOR = { id: 'erzaehler', label: 'Erzähler', c: 6, d: '<path d="M4 5h16v10H9l-5 4z"/><path d="M8 9h8M8 12h5"/>' };
@@ -220,30 +267,57 @@
     return buf;
   }
 
-  // Stille am Anfang/Ende finden: 20-ms-Fenster, Schwelle relativ zu Grundrauschen und lautester Stelle.
+  // Stille am Anfang/Ende finden (Version 2).
+  // - 20-ms-Fenster, Schwelle relativ zu Grundrauschen und lautester Stelle
+  // - die ersten 250 ms und letzten 200 ms zählen nicht für die Schwelle (Knackser vom Drücken/Loslassen)
+  // - kurze Geräuschfetzen am Anfang/Ende, die durch Stille vom Rest getrennt sind, werden verworfen
+  const TRIM_ALGO = 2;
   function analyze(buf) {
     const d = buf.getChannelData(0);
     const sr = buf.sampleRate;
+    const dur = buf.duration;
+    const full = { start: 0, end: dur };
     const win = Math.max(1, Math.floor(sr * 0.02));
+    const W = win / sr;
     const n = Math.floor(d.length / win);
-    if (n < 3) return { start: 0, end: buf.duration };
+    if (n < 5) return full;
     const rms = new Float32Array(n);
     for (let i = 0; i < n; i++) {
       let s = 0;
       for (let j = i * win; j < (i + 1) * win; j++) s += d[j] * d[j];
       rms[i] = Math.sqrt(s / win);
     }
-    const sorted = Array.from(rms).sort((a, b) => a - b);
-    const noise = sorted[Math.floor(n * 0.1)];
-    const peak = sorted[n - 1];
-    const thr = Math.max(noise * 3, peak * 0.1, 0.004);
-    let first = -1, last = -1;
-    for (let i = 0; i < n; i++) if (rms[i] > thr) { first = i; break; }
-    for (let i = n - 1; i >= 0; i--) if (rms[i] > thr) { last = i; break; }
-    if (first < 0) return { start: 0, end: buf.duration };
-    const start = Math.max(0, (first * win) / sr - 0.12);
-    const end = Math.min(buf.duration, ((last + 1) * win) / sr + 0.2);
-    if (end - start < 0.25) return { start: 0, end: buf.duration };
+    const lo = dur > 1.2 ? Math.round(0.25 / W) : 0;
+    const hi = dur > 1.2 ? n - Math.round(0.2 / W) : n;
+    if (hi - lo < 3) return full;
+    const mid = Array.from(rms.slice(lo, hi)).sort((x, y) => x - y);
+    const noise = mid[Math.floor(mid.length * 0.15)];
+    const peak = mid[mid.length - 1];
+    const thr = Math.max(noise * 3, peak * 0.08, 0.003);
+    const runs = [];
+    for (let i = lo; i < hi; i++) {
+      if (rms[i] <= thr) continue;
+      const last = runs[runs.length - 1];
+      if (last && (i - last.b) * W <= 0.2) last.b = i + 1;
+      else runs.push({ a: i, b: i + 1 });
+    }
+    if (!runs.length) return full;
+    // Fetzen vorne/hinten verwerfen: kürzer als 0,3 s, nah am Rand, danach/davor mehr als 0,4 s Stille
+    while (runs.length > 1) {
+      const r = runs[0], nx = runs[1];
+      if ((r.b - r.a) * W < 0.3 && r.a * W < 0.8 && (nx.a - r.b) * W > 0.4) runs.shift(); else break;
+    }
+    while (runs.length > 1) {
+      const r = runs[runs.length - 1], pv = runs[runs.length - 2];
+      if ((r.b - r.a) * W < 0.3 && (n - r.b) * W < 0.8 && (r.a - pv.b) * W > 0.4) runs.pop(); else break;
+    }
+    // Läuft das Geräusch in den ausgeklammerten Rand hinein, dorthin verlängern
+    const first = runs[0], lastRun = runs[runs.length - 1];
+    if (first.a === lo) while (first.a > 0 && rms[first.a - 1] > thr) first.a--;
+    if (lastRun.b === hi) while (lastRun.b < n && rms[lastRun.b] > thr) lastRun.b++;
+    const start = Math.max(0, first.a * W - 0.12);
+    const end = Math.min(dur, lastRun.b * W + 0.2);
+    if (end - start < 0.2) return full;
     return { start, end };
   }
 
@@ -267,7 +341,7 @@
       const a = analyze(buf);
       return {
         audio, type, buf,
-        meta: { duration: buf.duration, trimStart: a.start, trimEnd: a.end, gain: gainFor(buf, a.start, a.end), autoTrim: [a.start, a.end] },
+        meta: { duration: buf.duration, trimStart: a.start, trimEnd: a.end, gain: gainFor(buf, a.start, a.end), autoTrim: [a.start, a.end], trimAlgo: TRIM_ALGO },
       };
     } catch (e) {
       return { audio, type, buf: null, meta: { duration: 0, trimStart: null, trimEnd: null, gain: 1, autoTrim: null } };
@@ -606,11 +680,23 @@
   const newTile = (action) => `<button class="tile new" data-action="${action}">
       <span class="mic-badge">${ico('mic', 36, '#FFFFFF')}</span><span class="label">Neues Geräusch</span></button>`;
 
-  async function pickPicture() {
-    const grid = PICKABLE.map((p) => `<button class="tile" data-action="pick-pic" data-pic="${p.id}" style="${tint(p.c)}">
-        ${svg(p.d)}<span class="label">${esc(p.label)}</span></button>`).join('');
-    const id = await openSheet('Welches Bild?', grid);
+  async function pickPicture(currentId = null) {
+    const body = CATS.map(([cat, name]) => `<h3>${name}</h3><div class="pick-grid">${PICKABLE.filter((p) => p.cat === cat).map((p) =>
+      `<button class="tile${p.id === currentId ? ' current' : ''}" data-action="pick-pic" data-pic="${p.id}" style="${tint(p.c)}" aria-label="${esc(p.label)}">
+        ${svg(p.d)}<span class="label">${esc(p.label)}</span></button>`).join('')}</div>`).join('');
+    const id = await openSheet(currentId ? 'Anderes Bild' : 'Welches Bild?', body, 'pick-scroll');
     return id ? PIC[id] : null;
+  }
+
+  async function changePicture(id) {
+    const s = byId(id);
+    if (!s || s.kind === 'erzaehler') return;
+    const p = await pickPicture(s.pic);
+    if (!p || p.id === s.pic) return;
+    s.pic = p.id;
+    await saveSound(s);
+    render();
+    toast(`Neues Bild: ${p.label}`);
   }
 
   async function pickFromKiste() {
@@ -781,6 +867,7 @@
           <button class="btn" data-action="ed-auto">${ico('cut', 22)}<span>Automatisch</span></button>
           <button class="btn" data-action="ed-all">${ico('full', 22)}<span>Alles</span></button>
           ${s.kind !== 'erzaehler' ? `<button class="btn" data-action="ed-pic">${ico('image', 22)}<span>Bild ändern</span></button>` : ''}
+          <button class="btn" data-action="ed-rerec">${ico('mic', 22)}<span>Neu aufnehmen</span></button>
         </div>
         <p class="panel-text small">Aufgenommen ${new Date(s.created).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' })} · Original ${fmtSec(buf.duration)}</p>
         <button class="pill" data-action="ed-save">Speichern</button>
@@ -905,7 +992,7 @@
     if (!ed) return;
     const keep = { start: ed.start, end: ed.end };
     closeSheet(null);
-    const p = await pickPicture();
+    const p = await pickPicture(ed.s.pic);
     if (p) {
       ed.s.pic = p.id;
       ed.s.edited = Date.now();
@@ -920,16 +1007,18 @@
   let hoer = null;
   const HOLD_MS = 280;
 
+  // Aus der Geschichte geöffnet: tippen = ganze Geschichte, halten = neues Bild am Ende der Geschichte.
   async function openHoer() {
     stopAll();
+    const storyMode = state.tab === 'geschichte' && state.story.items.some(byId);
     const ov = $('#overlay');
     ov.innerHTML = `<div class="hoer" role="application" aria-label="Hör-Modus: halten zum Aufnehmen, tippen zum Abspielen">
       <div class="hoer-glow"></div>
       <button class="hoer-exit" data-hoer-exit aria-label="Hör-Modus beenden (gedrückt halten)"><span class="fill"></span>${ico('x', 22, '#6B6B6B')}</button>
-      <p class="hoer-hint">Halten = aufnehmen · Tippen = abspielen<br>Beenden: × gedrückt halten oder Zurück</p>
+      <p class="hoer-hint">${storyMode ? 'Tippen = ganze Geschichte · Halten = neues Bild aufnehmen' : 'Halten = aufnehmen · Tippen = abspielen'}<br>Beenden: × gedrückt halten oder Zurück</p>
     </div>`;
     const root = $('.hoer', ov);
-    const h = { root, stream: null, rec: null, pressT: 0, holdT: 0, maxT: 0, last: null, wake: null, meter: null, raf: 0, busy: false };
+    const h = { root, storyMode, stream: null, rec: null, pressT: 0, holdT: 0, maxT: 0, last: null, wake: null, meter: null, raf: 0, busy: false };
     hoer = h;
     try { history.pushState({ hoer: true }, ''); } catch (e) { /* egal */ }
     setTimeout(() => root.classList.add('quiet'), 3500);
@@ -944,11 +1033,12 @@
       if (!h.stream || h.busy || h.rec) return;
       e.preventDefault();
       try { root.setPointerCapture(e.pointerId); } catch (err) { /* egal */ }
-      stopAll();
-      root.classList.remove('play');
       try { h.rec = makeRecorder(h.stream); } catch (err) { toast('Aufnehmen geht hier nicht.'); return; }
       h.pressT = performance.now();
       h.holdT = setTimeout(() => {
+        // Erst beim Halten die laufende Wiedergabe stoppen: ein Tippen unterbricht die Geschichte nicht.
+        stopAll();
+        root.classList.remove('play');
         root.classList.add('rec');
         vibrate(35);
         const tick = () => {
@@ -978,7 +1068,8 @@
       root.classList.remove('rec');
       if (held < HOLD_MS) {
         r.stop(true);
-        hoerPlayLast();
+        if (h.storyMode) hoerPlayStory();
+        else hoerPlayLast();
         return;
       }
       h.busy = true;
@@ -989,6 +1080,10 @@
       const s = makeSound(res, { pic: 'ohr', source: 'hoermodus' });
       state.sounds.push(s);
       await saveSound(s);
+      if (h.storyMode) {
+        state.story.items.push(s.id);
+        await saveStory();
+      }
       h.last = s.id;
       h.busy = false;
       if (hoer !== h) return;
@@ -996,6 +1091,24 @@
       await sleep(150);
       hoerPlayLast();
     }
+  }
+
+  async function hoerPlayStory() {
+    const h = hoer;
+    if (!h || storyPlaying) return; // läuft schon: Tippen ignorieren
+    const run = ++storyRun;
+    storyPlaying = true;
+    h.root.classList.add('play');
+    for (const id of state.story.items.slice()) {
+      const s = byId(id);
+      if (!s) continue;
+      if (hoer !== h || run !== storyRun) break;
+      await playSound(s);
+      if (hoer !== h || run !== storyRun) break;
+      await sleep(450);
+    }
+    if (run === storyRun) storyPlaying = false;
+    if (hoer === h) h.root.classList.remove('play');
   }
 
   async function hoerPlayLast() {
@@ -1332,8 +1445,8 @@
     const tiles = list.map((s) => {
       const p = picOf(s);
       const tools = state.parent ? `<div class="tile-tools">
-          <button class="mini" data-action="edit" data-id="${s.id}" aria-label="Schneiden">${ico('cut', 22)}</button>
-          <button class="mini" data-action="rerec-sound" data-id="${s.id}" aria-label="Neu aufnehmen">${ico('mic', 22)}</button>
+          <button class="mini" data-action="change-pic" data-id="${s.id}" aria-label="Bild ändern">${ico('image', 22)}</button>
+          <button class="mini" data-action="edit" data-id="${s.id}" aria-label="Schneiden und neu aufnehmen">${ico('cut', 22)}</button>
           <button class="mini danger" data-action="del-sound" data-id="${s.id}" aria-label="Löschen">${ico('trash', 22)}</button>
         </div>` : '';
       return `<div class="tile-wrap" data-sound-id="${s.id}">
@@ -1528,6 +1641,14 @@
     'ed-auto': () => { if (!editor) return; stopEditorPlay(); const a = analyze(editor.buf); editor.start = a.start; editor.end = a.end; drawEditor(); },
     'ed-all': () => { if (!editor) return; stopEditorPlay(); editor.start = 0; editor.end = editor.buf.duration; drawEditor(); },
     'ed-pic': () => editorPicture(),
+    'ed-rerec': () => {
+      if (!editor) return;
+      const s = editor.s;
+      closeSheet(null);
+      const i = state.tab === 'geschichte' ? state.story.items.indexOf(s.id) : -1;
+      reRecord(s.id, null, i >= 0 ? i : null);
+    },
+    'change-pic': (t) => changePicture(t.dataset.id),
     'ed-save': () => editorSave(),
   };
 
@@ -1604,23 +1725,25 @@
   // Ältere Aufnahmen (ohne Schnitt/Angleichung) einmalig nachbearbeiten.
   async function migrate() {
     for (const s of state.sounds) {
-      if (s.v === 2 && s.trimStart !== undefined) continue;
+      // Neu schneiden: alte Aufnahmen und alles mit älterem Schnitt-Verfahren, sofern nicht von Hand geschnitten
+      if (s.v === 2 && s.trimStart !== undefined && (s.trimAlgo === TRIM_ALGO || s.edited)) continue;
       try {
         const buf = await bufferOf(s);
         const a = analyze(buf);
         Object.assign(s, {
           v: 2, kind: s.kind || 'geraeusch', source: s.source || 'kiste', updated: s.updated || s.created, edited: s.edited || null,
-          duration: buf.duration, trimStart: a.start, trimEnd: a.end, gain: gainFor(buf, a.start, a.end), autoTrim: [a.start, a.end], note: s.note || '',
+          duration: buf.duration, trimStart: a.start, trimEnd: a.end, gain: gainFor(buf, a.start, a.end), autoTrim: [a.start, a.end], trimAlgo: TRIM_ALGO, note: s.note || '',
         });
         await saveSound(s);
       } catch (e) { /* bleibt unbearbeitet */ }
     }
     const z = state.zauber;
-    if (z && z.trimStart === undefined) {
+    if (z && z.trimAlgo !== TRIM_ALGO) {
       try {
         const buf = await getZauberBuf();
         const a = analyze(buf);
-        Object.assign(z, { trimStart: a.start, trimEnd: a.end, gain: gainFor(buf, a.start, a.end), duration: buf.duration });
+        Object.assign(z, { trimStart: a.start, trimEnd: a.end, gain: gainFor(buf, a.start, a.end), duration: buf.duration, trimAlgo: TRIM_ALGO });
+        zauberPeaks = null;
         await DB.put('meta', z, 'zauber');
       } catch (e) { /* egal */ }
     }
