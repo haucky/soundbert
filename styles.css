@@ -284,3 +284,77 @@ h1 { margin: 0; font-size: 28px; font-weight: 900; line-height: 1.15; overflow: 
 @media (prefers-reduced-motion: reduce) {
   .tile-wrap.playing { animation: none; }
 }
+
+/* ---------- Version 2: Kopf-Knöpfe, Erzählstimme, Editor, Hör-Modus, Panels ---------- */
+.head-btns { display: flex; gap: 8px; flex-shrink: 0; }
+.icon-btn {
+  width: 48px; height: 48px; border-radius: 16px; border: none; background: var(--chip);
+  display: flex; align-items: center; justify-content: center;
+}
+h1 { font-size: 26px; }
+.tool { width: 44px; height: 44px; border-radius: 14px; }
+.scene-tools { gap: 6px; }
+
+.add-row { display: flex; gap: 12px; flex-shrink: 0; }
+.add-row .add-scene { flex: 1; min-width: 0; }
+.add-voice {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  width: 112px; flex-shrink: 0; background: transparent; border-radius: 26px; border: 4px dashed var(--dash); padding: 10px 6px;
+}
+.add-voice .plus { width: 56px; height: 56px; border-radius: 18px; background: var(--soft); display: flex; align-items: center; justify-content: center; color: var(--muted); }
+.add-voice .plus svg { width: 30px; height: 30px; }
+.add-voice .label { font-size: 16px; font-weight: 800; color: var(--muted); }
+.scene.voice { background: #FBF4EA; box-shadow: 0 4px 0 var(--card-sh); }
+.scene.voice .scene-pic { width: 72px; height: 72px; border-radius: 20px; margin: 12px; }
+.scene.voice .scene-pic svg.pic { width: 40px; height: 40px; }
+
+.pill-row { display: flex; gap: 12px; flex-shrink: 0; }
+.pill-row .pill:first-child { flex: 1; }
+.pill.square { width: 76px; padding: 0; }
+
+/* Panels & Knöpfe */
+.panel { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; padding-bottom: 4px; }
+.panel-text { margin: 0; font-size: 17px; line-height: 1.45; color: var(--ink); }
+.panel-text b { font-weight: 900; }
+.small, .panel-text.small { font-size: 14px; color: var(--muted); }
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 56px; padding: 0 16px;
+  border: none; border-radius: 18px; background: var(--chip); color: var(--ink); font-size: 17px; font-weight: 800;
+}
+.btn:active { transform: translateY(2px); }
+.btn.primary { background: var(--ink); color: #FFF; }
+.sheet-head .rec-chip { box-shadow: none; background: var(--card); }
+
+/* Schnitt-Editor */
+.ed-wave {
+  width: 100%; height: 160px; background: var(--card); border-radius: 20px; touch-action: none;
+  box-shadow: 0 4px 0 var(--card-sh); flex-shrink: 0;
+}
+.ed-time { margin: 0; text-align: center; font-size: 16px; font-weight: 800; color: var(--muted); }
+.ed-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.ed-row .btn { font-size: 15px; min-height: 52px; padding: 0 10px; }
+
+/* Hör-Modus */
+.hoer {
+  position: fixed; inset: 0; z-index: 35; background: #000; touch-action: none;
+  display: flex; align-items: center; justify-content: center; --lvl: 0;
+}
+.hoer-glow {
+  position: absolute; width: 70vmin; height: 70vmin; border-radius: 50%; opacity: 0;
+  transition: opacity .25s, background .25s; pointer-events: none;
+  transform: scale(calc(0.85 + var(--lvl) * 0.3));
+}
+.hoer.rec .hoer-glow { opacity: .55; background: radial-gradient(circle, #5A1A12 0%, rgba(0,0,0,0) 70%); }
+.hoer.play .hoer-glow { opacity: .5; background: radial-gradient(circle, #13264D 0%, rgba(0,0,0,0) 70%); }
+.hoer-exit {
+  position: absolute; top: calc(14px + var(--safe-top)); left: 14px; width: 52px; height: 52px; border-radius: 50%;
+  border: none; background: #111; display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.hoer-exit .fill { position: absolute; inset: auto 0 0 0; height: 0; background: #333; }
+.hoer-exit.holding .fill { height: 100%; transition: height 1.2s linear; }
+.hoer-exit svg { position: relative; }
+.hoer-hint {
+  position: absolute; bottom: calc(40px + var(--safe-bottom)); left: 24px; right: 24px; margin: 0;
+  text-align: center; color: #8A8A8A; font-size: 16px; font-weight: 700; line-height: 1.5; transition: opacity 1s; pointer-events: none;
+}
+.hoer.quiet .hoer-hint { opacity: 0; }

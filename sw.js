@@ -1,6 +1,6 @@
 /* Service Worker: hält die App offline verfügbar.
    Bei jeder Änderung an den Dateien VERSION hochzählen. */
-const VERSION = 'soundbert-v1';
+const VERSION = 'soundbert-v2';
 const ASSETS = [
   './',
   'index.html',
@@ -14,6 +14,7 @@ const ASSETS = [
   'fonts/nunito-latin-600-normal.woff2',
   'fonts/nunito-latin-800-normal.woff2',
   'fonts/nunito-latin-900-normal.woff2',
+  'vendor/lame.min.js',
 ];
 
 self.addEventListener('install', (e) => {

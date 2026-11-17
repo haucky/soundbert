@@ -9,12 +9,26 @@ Live: https://haucky.github.io/soundbert/
 - **Kiste**: Jedes Geräusch ist ein Bild mit einer Aufnahme. Antippen spielt es ab, das Mikrofon-Feld nimmt ein neues auf (erst Bild wählen, dann aufnehmen, danach spielt es sofort einmal ab).
 - **Geschichte**: Eine Reihenfolge von Geräuschen aus der Kiste. „Neues Bild“ wählt ein Geräusch aus der Kiste oder nimmt ein neues auf. „Ganze Geschichte“ spielt alles nacheinander ab. Wird ein Geräusch neu aufgenommen, ändert es sich überall, wo es vorkommt.
 - **Zauber**: Etwas aufnehmen und als Riese, Maus, Höhlen-Echo oder Roboter abspielen (Web Audio).
+- **Hör-Modus** (Ohr-Symbol oben): schwarzer Bildschirm. Irgendwo **halten = aufnehmen**, **tippen = letztes Geräusch abspielen**. Vibration statt Bild. Beenden: × gedrückt halten oder Zurück-Taste. Aufnahmen landen mit dem Ohr-Bild in der Kiste.
+- **Erzählstimme**: In der Geschichte „Erzählen“ antippen und bis zu 60 Sekunden einsprechen. Erzählstimmen gehören nur zur Geschichte, nicht zur Kiste.
+
+## Schneiden & Angleichen
+
+Jede Aufnahme wird automatisch geschnitten (Stille am Anfang/Ende) und in der Lautstärke angeglichen. Die **Originalaufnahme bleibt unverändert**; gespeichert werden nur Schnittpunkte und Verstärkung. Im Eltern-Modus öffnet die Schere den Editor: Anfang und Ende auf der Wellenform verschieben, „Probehören“, „Automatisch“, „Alles“, „Bild ändern“.
+
+## Teilen & Sichern (Eltern-Modus › ⋯)
+
+- **Geschichte als MP3**: wird im Browser gebaut (lamejs) und über das Android-Teilen-Menü verschickt (z. B. WhatsApp) oder heruntergeladen.
+- **Alles exportieren (ZIP)**: `metadata.json` (Bild, Art, Datum, Schnittpunkte, Verstärkung, Notizfeld) plus alle Originalaufnahmen in `audio/`.
+- **Sicherung laden**: fügt fehlende Aufnahmen hinzu; die Geschichte wird übernommen, wenn die aktuelle leer ist.
 
 ## Eltern-Modus
 
-Das Schloss oben rechts **1,2 Sekunden gedrückt halten**. Dann lassen sich Geräusche löschen oder neu aufnehmen, Bilder in der Geschichte verschieben oder herausnehmen und der Titel ändern. Antippen sperrt wieder; beim Verlassen der App sperrt es automatisch.
+Das Schloss oben rechts **1,2 Sekunden gedrückt halten**. Dann lassen sich Geräusche schneiden, löschen oder neu aufnehmen, Bilder in der Geschichte verschieben oder herausnehmen, der Titel ändern und über ⋯ sichern und teilen. Antippen sperrt wieder; beim Verlassen der App sperrt es automatisch.
 
 ## Technik
+
+- Datenmodell steht oben in `app.js`; jedes Geräusch hat ein Feld `note` für ein späteres Stimmen-Tagebuch.
 
 - Reines HTML, CSS und JavaScript, kein Build-Schritt.
 - Aufnahme mit `MediaRecorder`, Speicherung in IndexedDB – alles bleibt auf dem Gerät.
@@ -29,5 +43,7 @@ python3 -m http.server 8000
 ```
 
 Nach Änderungen an Dateien in `sw.js` die `VERSION` hochzählen, damit installierte Apps die neue Fassung laden.
+
+MP3-Encoder: [lamejs](https://github.com/zhuker/lamejs) (LGPL-3.0, unverändert in `vendor/`).
 
 Schrift: [Nunito](https://fonts.google.com/specimen/Nunito), SIL Open Font License (siehe `fonts/OFL.txt`).
