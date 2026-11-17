@@ -33,6 +33,7 @@
     ['zuhause', 'Zuhause'], ['menschen', 'Menschen & Gefühle'], ['musik', 'Musik & Spiel'],
   ];
   const PICS = [
+    { id: 'welle', label: 'Geräusch', c: 6, cat: null, d: '<path d="M3 12h2M7 8v8M11 5v14M15 9v6M19 7v10M21 12h0"/>' },
     { id: 'ohr', label: 'Geräusch', c: 6, cat: null, d: '<path d="M7 9a5 5 0 0 1 10 0c0 3-3 4-3 7a3 3 0 0 1-5.5 1.6"/><path d="M10 9a2 2 0 0 1 4 0c0 1.5-1.5 2-1.5 3.5"/>' },
     // Tiere
     { id: 'hund', label: 'Wuff', c: 0, cat: 'tiere', d: '<circle cx="7" cy="8" r="1.8"/><circle cx="12" cy="6" r="1.8"/><circle cx="17" cy="8" r="1.8"/><path d="M12 11c-3 0-5.5 3.5-5.5 6 0 1.8 1.6 2.6 3 2 1.2-.5 1.8-.6 2.5-.6s1.3.1 2.5.6c1.4.6 3-.2 3-2 0-2.5-2.5-6-5.5-6z"/>' },
@@ -103,8 +104,10 @@
   ];
   const PIC = Object.fromEntries(PICS.map((p) => [p.id, p]));
   const NARRATOR = { id: 'erzaehler', label: 'Erzähler', c: 6, d: '<path d="M4 5h16v10H9l-5 4z"/><path d="M8 9h8M8 12h5"/>' };
+  // Name eines Geräuschs: eigener Name, sonst der Name des Bilds.
+  const labelOf = (s) => (s && s.kind === 'erzaehler' ? 'Erzählstimme' : (s && s.name) || picOf(s).label);
   const picOf = (s) => (s && s.kind === 'erzaehler' ? NARRATOR : PIC[s && s.pic] || PIC.ohr);
-  const PICKABLE = PICS.filter((p) => p.id !== 'ohr');
+  const PICKABLE = PICS.filter((p) => p.cat);
 
   const FX = [
     { id: 'riese', label: 'Riese', sub: 'ganz tief', c: 0, d: '<path d="M5 6l7 6 7-6"/><path d="M5 12l7 6 7-6"/>' },
@@ -227,7 +230,7 @@
   // ---------------------------------------------------------------- Zustand
   const state = {
     tab: 'kiste',
-    parent: false,
+    edit: false, // Bearbeiten-Ansicht (per langem Drücken)
     sounds: [],
     story: { title: 'Meine Geschichte', items: [] },
     zauber: null,
@@ -348,9 +351,9 @@
     }
   }
 
-  function makeSound(res, { kind = 'geraeusch', pic = 'ohr', source = 'kiste' }) {
+  function makeSound(res, { kind = 'geraeusch', pic = 'ohr', source = 'kiste', name = '' }) {
     const now = Date.now();
-    const s = { id: uid(), v: 2, kind, pic, source, created: now, updated: now, edited: null, audio: res.audio, type: res.type, note: '', ...res.meta };
+    const s = { id: uid(), v: 2, kind, pic, name, source, created: now, updated: now, edited: null, audio: res.audio, type: res.type, note: '', ...res.meta };
     if (res.buf) decoded.set(s.id, { updated: s.updated, buf: res.buf });
     return s;
   }
@@ -680,30 +683,41 @@
   const newTile = (action) => `<button class="tile new" data-action="${action}">
       <span class="mic-badge">${ico('mic', 36, '#FFFFFF')}</span><span class="label">Neues Geräusch</span></button>`;
 
-  async function pickPicture(currentId = null) {
-    const body = CATS.map(([cat, name]) => `<h3>${name}</h3><div class="pick-grid">${PICKABLE.filter((p) => p.cat === cat).map((p) =>
-      `<button class="tile${p.id === currentId ? ' current' : ''}" data-action="pick-pic" data-pic="${p.id}" style="${tint(p.c)}" aria-label="${esc(p.label)}">
-        ${svg(p.d)}<span class="label">${esc(p.label)}</span></button>`).join('')}</div>`).join('');
-    const id = await openSheet(currentId ? 'Anderes Bild' : 'Welches Bild?', body, 'pick-scroll');
-    return id ? PIC[id] : null;
+  // Blatt „Neues Geräusch“ bzw. „Name & Bild“: Namensfeld, „Ohne Bild“, Bilder nach Gruppen.
+  // Ein Bild antippen übernimmt Bild und Namen sofort. Ergebnis: { pic, name, nameOnly } oder null.
+  async function pickPicture({ currentId = null, currentName = '', change = false } = {}) {
+    const tile = (p, label, extra = '') => `<button class="tile${p.id === currentId ? ' current' : ''}${extra}" data-action="pick-pic" data-pic="${p.id}" style="${tint(p.c)}" aria-label="${esc(label)}">
+        ${svg(p.d)}<span class="label">${esc(label)}</span></button>`;
+    const body = `<div class="name-row">
+        <input class="name-input" id="pick-name" maxlength="32" autocomplete="off" enterkeyhint="done"
+          placeholder="${change ? `Name (sonst „${esc((PIC[currentId] || PIC.welle).label)}“)` : 'Eigener Name (optional)'}" value="${esc(currentName || '')}" aria-label="Name des Geräuschs">
+        ${change ? `<button class="btn" data-action="pick-name-only">Nur Name</button>` : ''}
+      </div>
+      <p class="small pick-hint">${change ? 'Bild antippen übernimmt Bild und Namen.' : 'Erst Namen tippen (wenn du magst), dann ein Bild wählen – die Aufnahme startet sofort.'}</p>
+      <div class="pick-grid">${tile(PIC.welle, 'Ohne Bild', ' plain')}</div>
+      ${CATS.map(([cat, name]) => `<h3>${name}</h3><div class="pick-grid">${PICKABLE.filter((p) => p.cat === cat).map((p) => tile(p, p.label)).join('')}</div>`).join('')}`;
+    return openSheet(change ? 'Name & Bild' : 'Neues Geräusch', body, 'pick-scroll');
   }
 
-  async function changePicture(id) {
+  async function changePicture(id, after = null) {
     const s = byId(id);
-    if (!s || s.kind === 'erzaehler') return;
-    const p = await pickPicture(s.pic);
-    if (!p || p.id === s.pic) return;
-    s.pic = p.id;
-    await saveSound(s);
-    render();
-    toast(`Neues Bild: ${p.label}`);
+    if (!s || s.kind === 'erzaehler') { if (after) after(); return; }
+    const res = await pickPicture({ currentId: s.pic, currentName: s.name || '', change: true });
+    if (res) {
+      if (!res.nameOnly && res.pic) s.pic = res.pic;
+      s.name = res.name || '';
+      await saveSound(s);
+      render();
+      toast(`Gespeichert: ${labelOf(s)}`);
+    }
+    if (after) after();
   }
 
   async function pickFromKiste() {
     const grid = newTile('pick-new') + kisteSounds().slice().reverse().map((s) => {
       const p = picOf(s);
       return `<button class="tile" data-action="pick-sound" data-id="${s.id}" style="${tint(p.c)}">
-        ${svg(p.d)}<span class="label">${esc(p.label)}</span></button>`;
+        ${svg(p.d)}<span class="label">${esc(labelOf(s))}</span></button>`;
     }).join('');
     const res = await openSheet('Aus der Kiste', grid);
     if (!res) return;
@@ -718,12 +732,14 @@
 
   // ---------------------------------------------------------------- Abläufe
   async function newSoundFlow(toStory) {
-    const p = await pickPicture();
-    if (!p) return;
-    const chip = toStory ? `Bild ${pictureCount() + 1}` : p.label;
+    const pick = await pickPicture();
+    if (!pick || !pick.pic) return;
+    const p = PIC[pick.pic] || PIC.welle;
+    const name = pick.name || '';
+    const chip = name || (toStory ? `Bild ${pictureCount() + 1}` : p.label);
     const res = await record({ icon: svg(p.d), bg: COLORS[p.c][0], chip });
     if (!res) return;
-    const s = makeSound(res, { pic: p.id, source: toStory ? 'geschichte' : 'kiste' });
+    const s = makeSound(res, { pic: p.id, name, source: toStory ? 'geschichte' : 'kiste' });
     state.sounds.push(s);
     await saveSound(s);
     if (toStory) {
@@ -752,7 +768,7 @@
     const s = byId(id);
     if (!s) return;
     const p = picOf(s);
-    const res = await record({ icon: svg(p.d), bg: COLORS[p.c][0], chip: chip || p.label, maxMs: s.kind === 'erzaehler' ? 60000 : 15000 });
+    const res = await record({ icon: svg(p.d), bg: COLORS[p.c][0], chip: chip || labelOf(s), maxMs: s.kind === 'erzaehler' ? 60000 : 15000 });
     if (!res) return;
     applyRecording(s, res);
     await saveSound(s);
@@ -858,7 +874,7 @@
     $('#overlay').innerHTML = `<div class="sheet-backdrop" data-action="sheet-close">
       <div class="sheet" data-action="noop" role="dialog" aria-modal="true" aria-label="Aufnahme schneiden">
         <div class="sheet-head">
-          <div class="rec-chip"><span class="ico" style="background:${COLORS[p.c][0]}">${svg(p.d)}</span><span>${esc(p.label)}</span></div>
+          <div class="rec-chip"><span class="ico" style="background:${COLORS[p.c][0]}">${svg(p.d)}</span><span>${esc(labelOf(s))}</span></div>
           <button class="mini" style="background:var(--chip)" data-action="sheet-close" aria-label="Schließen">${ico('x', 22)}</button></div>
         <canvas class="ed-wave" aria-label="Wellenform: Anfang und Ende verschieben"></canvas>
         <p class="ed-time"></p>
@@ -866,7 +882,7 @@
           <button class="btn" data-action="ed-play">${ico('auto', 22)}<span>Probehören</span></button>
           <button class="btn" data-action="ed-auto">${ico('cut', 22)}<span>Automatisch</span></button>
           <button class="btn" data-action="ed-all">${ico('full', 22)}<span>Alles</span></button>
-          ${s.kind !== 'erzaehler' ? `<button class="btn" data-action="ed-pic">${ico('image', 22)}<span>Bild ändern</span></button>` : ''}
+          ${s.kind !== 'erzaehler' ? `<button class="btn" data-action="ed-pic">${ico('image', 22)}<span>Name &amp; Bild</span></button>` : ''}
           <button class="btn" data-action="ed-rerec">${ico('mic', 22)}<span>Neu aufnehmen</span></button>
         </div>
         <p class="panel-text small">Aufgenommen ${new Date(s.created).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' })} · Original ${fmtSec(buf.duration)}</p>
@@ -992,13 +1008,7 @@
     if (!ed) return;
     const keep = { start: ed.start, end: ed.end };
     closeSheet(null);
-    const p = await pickPicture(ed.s.pic);
-    if (p) {
-      ed.s.pic = p.id;
-      ed.s.edited = Date.now();
-      await saveSound(ed.s);
-      render();
-    }
+    await changePicture(ed.s.id);
     openEditor(ed.s.id, keep);
   }
 
@@ -1358,7 +1368,7 @@
     for (const s of state.sounds) {
       const file = `audio/${s.kind === 'erzaehler' ? 'erzaehler' : 'geraeusch'}-${s.id}.${extFor(s.type)}`;
       meta.sounds.push({
-        id: s.id, kind: s.kind, pic: s.pic, label: picOf(s).label, source: s.source || null,
+        id: s.id, kind: s.kind, pic: s.pic, name: s.name || '', label: labelOf(s), source: s.source || null,
         created: new Date(s.created).toISOString(), updated: new Date(s.updated).toISOString(),
         edited: s.edited ? new Date(s.edited).toISOString() : null,
         durationSec: s.duration, trimStartSec: s.trimStart, trimEndSec: s.trimEnd, gain: s.gain, autoTrimSec: s.autoTrim || null,
@@ -1373,7 +1383,7 @@
       files.push({ name: file, data: new Uint8Array(z.audio) });
     }
     files.unshift({ name: 'metadata.json', data: enc.encode(JSON.stringify(meta, null, 2)) });
-    files.splice(1, 0, { name: 'LIESMICH.txt', data: enc.encode('Soundbert-Sicherung.\nmetadata.json beschreibt alle Aufnahmen (Schnittpunkte in Sekunden, Verstärkung, Bild, Datum).\nDie Dateien in audio/ sind die unveränderten Originalaufnahmen.\nLaden: In Soundbert im Eltern-Modus › Sichern › Sicherung laden.\n') });
+    files.splice(1, 0, { name: 'LIESMICH.txt', data: enc.encode('Soundbert-Sicherung.\nmetadata.json beschreibt alle Aufnahmen (Schnittpunkte in Sekunden, Verstärkung, Bild, Datum).\nDie Dateien in audio/ sind die unveränderten Originalaufnahmen.\nLaden: In Soundbert oben auf ⋯ › Sicherung laden.\n') });
     const blob = zipStore(files);
     const d = new Date();
     const name = `soundbert-sicherung-${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}.zip`;
@@ -1392,7 +1402,7 @@
     for (const m of meta.sounds) {
       if (!m.id || byId(m.id) || !files[m.file]) continue;
       const s = {
-        id: m.id, v: 2, kind: m.kind === 'erzaehler' ? 'erzaehler' : 'geraeusch', pic: m.pic || 'ohr', source: m.source || 'import',
+        id: m.id, v: 2, kind: m.kind === 'erzaehler' ? 'erzaehler' : 'geraeusch', pic: m.pic || 'ohr', name: m.name || '', source: m.source || 'import',
         created: ts(m.created, Date.now()), updated: ts(m.updated, Date.now()), edited: m.edited ? ts(m.edited, null) : null,
         audio: files[m.file], type: m.mimeType || 'audio/webm', duration: m.durationSec || 0,
         trimStart: m.trimStartSec != null ? m.trimStartSec : null, trimEnd: m.trimEndSec != null ? m.trimEndSec : null,
@@ -1431,27 +1441,26 @@
 
   // ---------------------------------------------------------------- Ansichten
   function head(inner) {
-    const lock = state.parent
-      ? `<button class="lock on" data-lock aria-label="Eltern-Modus beenden"><span class="fill"></span>${ico('unlock', 22, '#FFFFFF')}</button>`
-      : `<button class="lock" data-lock aria-label="Eltern-Modus (gedrückt halten)"><span class="fill"></span>${ico('lock', 22)}</button>`;
-    const extra = state.parent
-      ? `<button class="icon-btn" data-action="backup" aria-label="Sichern und Teilen">${ico('more', 22)}</button>`
-      : `<button class="icon-btn" data-action="hoer" aria-label="Hör-Modus">${ico('ear', 22)}</button>`;
-    return `<header class="head">${inner}<div class="head-btns">${extra}${lock}</div></header>`;
+    const btns = state.edit
+      ? `<button class="icon-btn" data-action="backup" aria-label="Sichern und Teilen">${ico('more', 22)}</button>
+         <button class="done-btn" data-action="edit-done">Fertig</button>`
+      : `<button class="icon-btn" data-action="backup" aria-label="Sichern und Teilen">${ico('more', 22)}</button>
+         <button class="icon-btn ear" data-action="hoer" aria-label="Hör-Modus">${ico('ear', 22)}</button>`;
+    return `<header class="head${state.edit ? ' editing' : ''}">${inner}<div class="head-btns">${btns}</div></header>`;
   }
 
   function kisteView() {
     const list = kisteSounds();
     const tiles = list.map((s) => {
       const p = picOf(s);
-      const tools = state.parent ? `<div class="tile-tools">
-          <button class="mini" data-action="change-pic" data-id="${s.id}" aria-label="Bild ändern">${ico('image', 22)}</button>
+      const tools = state.edit ? `<div class="tile-tools">
+          <button class="mini" data-action="change-pic" data-id="${s.id}" aria-label="Name und Bild ändern">${ico('image', 22)}</button>
           <button class="mini" data-action="edit" data-id="${s.id}" aria-label="Schneiden und neu aufnehmen">${ico('cut', 22)}</button>
           <button class="mini danger" data-action="del-sound" data-id="${s.id}" aria-label="Löschen">${ico('trash', 22)}</button>
         </div>` : '';
       return `<div class="tile-wrap" data-sound-id="${s.id}">
-          <button class="tile" data-action="play-sound" data-id="${s.id}" style="${tint(p.c)}" aria-label="${esc(p.label)} abspielen">
-            ${svg(p.d)}<span class="label">${esc(p.label)}</span></button>${tools}</div>`;
+          <button class="tile" data-action="play-sound" data-id="${s.id}" style="${tint(p.c)}" aria-label="${esc(labelOf(s))} abspielen">
+            ${svg(p.d)}<span class="label${labelOf(s).length > 10 ? ' long' : ''}">${esc(labelOf(s))}</span></button>${tools}</div>`;
     });
     tiles.push(newTile('new-sound'));
     const pages = [];
@@ -1470,7 +1479,7 @@
     const p = picOf(s);
     const voice = s.kind === 'erzaehler';
     const name = voice ? 'Erzählstimme' : `Bild ${num}`;
-    const right = state.parent
+    const right = state.edit
       ? `<div class="scene-tools">
           <button class="tool" data-action="edit" data-id="${s.id}" aria-label="Schneiden">${ico('cut', 22)}</button>
           <button class="tool" data-action="move-up" data-index="${i}" aria-label="Nach oben" ${i === 0 ? 'disabled' : ''}>${ico('up', 22)}</button>
@@ -1482,8 +1491,11 @@
           <button class="round play" data-action="play-scene" data-index="${i}" aria-label="${name} abspielen">${playIco(26)}</button>
         </div>`;
     return `<div class="scene${voice ? ' voice' : ''}" data-index="${i}" data-sound-id="${s.id}">
-        <button class="scene-pic" data-action="play-scene" data-index="${i}" style="background:${COLORS[p.c][0]}" aria-label="${esc(name)} abspielen">
-          ${svg(p.d)}${voice ? '' : `<span class="badge">${num}</span>`}</button>
+        <div class="scene-left">
+          <button class="scene-pic" data-action="play-scene" data-index="${i}" style="background:${COLORS[p.c][0]}" aria-label="${esc(labelOf(s))} abspielen">
+            ${svg(p.d)}${voice ? '' : `<span class="badge">${num}</span>`}</button>
+          ${voice ? '' : `<span class="scene-name">${esc(labelOf(s))}</span>`}
+        </div>
         ${right}
         <div class="bars" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
         <span class="playing-label">spielt …</span>
@@ -1491,7 +1503,7 @@
   }
 
   function geschichteView() {
-    const title = state.parent
+    const title = state.edit
       ? `<input class="title-input" data-field="title" value="${esc(state.story.title)}" maxlength="40" aria-label="Titel der Geschichte">`
       : `<h1>${esc(state.story.title)}</h1>`;
     const has = state.story.items.length > 0;
@@ -1509,7 +1521,7 @@
             <button class="add-voice" data-action="add-voice" aria-label="Erzählstimme aufnehmen"><span class="plus">${svg(NARRATOR.d, { sw: 2 })}</span><span class="label">Erzählen</span></button>
           </div>
         </div>
-        ${state.parent ? `<div class="pill-row">${playBtn}<button class="pill square" data-action="share-story" aria-label="Geschichte als MP3 teilen" ${has ? '' : 'disabled'}>${ico('share', 28, '#FFFFFF')}</button></div>` : playBtn}`;
+        <div class="pill-row">${playBtn}<button class="pill square" data-action="share-story" aria-label="Geschichte als MP3 teilen" ${has ? '' : 'disabled'}>${ico('share', 28, '#FFFFFF')}</button></div>`;
   }
 
   function waveHtml() {
@@ -1627,12 +1639,14 @@
     'zauber-fx': (t) => playZauber(t.dataset.fx, t),
     'zauber-rec': () => recordZauber(),
     hoer: () => openHoer(),
+    'edit-done': () => endEdit(),
     backup: () => openBackup(),
     'export-zip': () => exportZip(),
     'import-zip': () => $('#import-file').click(),
     'sheet-close': () => closeSheet(null),
     noop: () => {},
-    'pick-pic': (t) => closeSheet(t.dataset.pic),
+    'pick-pic': (t) => { const n = $('#pick-name'); closeSheet({ pic: t.dataset.pic, name: n ? n.value.trim() : '' }); },
+    'pick-name-only': () => { const n = $('#pick-name'); closeSheet({ pic: null, name: n ? n.value.trim() : '', nameOnly: true }); },
     'pick-sound': (t) => closeSheet({ sound: t.dataset.id }),
     'pick-new': () => closeSheet({ new: true }),
     'rec-stop': () => recCtl && recCtl.stop(),
@@ -1671,40 +1685,60 @@
     }
   });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && e.target.matches('[data-field="title"]')) e.target.blur();
+    if (e.key === 'Enter' && e.target.matches('[data-field="title"], #pick-name')) e.target.blur();
   });
 
-  // Eltern-Modus: zum Einschalten 1,2 Sekunden gedrückt halten, zum Ausschalten tippen.
-  let holdTimer = null;
+  // Bearbeiten: langes Drücken (0,5 s) auf ein Geräusch oder ein Bild der Geschichte.
+  // Der Klick nach dem langen Drücken wird verschluckt, damit nichts abspielt.
+  const LONG_MS = 500;
+  let lp = null;
+  let swallow = false;
+  document.addEventListener('pointerdown', () => { swallow = false; }, true);
   document.addEventListener('pointerdown', (e) => {
-    const b = e.target.closest('[data-lock]');
-    if (!b) return;
-    e.preventDefault();
-    if (state.parent) {
-      stopAll();
-      state.parent = false;
-      render();
-      toast('Eltern-Modus aus');
-      return;
-    }
-    b.classList.add('holding');
-    holdTimer = setTimeout(() => {
-      holdTimer = null;
-      stopAll();
-      state.parent = true;
-      render();
-      toast('Eltern-Modus an');
-    }, 1200);
+    if (state.edit || hoer || $('#overlay').innerHTML) return;
+    const el = e.target.closest('.tile-wrap, .scene');
+    if (!el) return;
+    const x = e.clientX, y = e.clientY;
+    el.classList.add('pressing');
+    lp = {
+      el, x, y,
+      t: setTimeout(() => {
+        lp = null;
+        el.classList.remove('pressing');
+        swallow = true; // nur der Klick, der dieses lange Drücken beendet
+        vibrate(30);
+        startEdit();
+      }, LONG_MS),
+    };
   });
-  const endHold = () => {
-    if (!holdTimer) return;
-    clearTimeout(holdTimer);
-    holdTimer = null;
-    $$('.lock.holding').forEach((b) => b.classList.remove('holding'));
-    toast('Für Eltern: gedrückt halten');
+  const cancelLp = () => {
+    if (!lp) return;
+    clearTimeout(lp.t);
+    lp.el.classList.remove('pressing');
+    lp = null;
   };
-  document.addEventListener('pointerup', endHold);
-  document.addEventListener('pointercancel', endHold);
+  document.addEventListener('pointermove', (e) => {
+    if (lp && Math.hypot(e.clientX - lp.x, e.clientY - lp.y) > 10) cancelLp();
+  });
+  document.addEventListener('pointerup', cancelLp);
+  document.addEventListener('pointercancel', cancelLp);
+  document.addEventListener('scroll', cancelLp, true);
+  document.addEventListener('click', (e) => {
+    if (swallow) { e.stopPropagation(); e.preventDefault(); swallow = false; }
+  }, true);
+
+  function startEdit() {
+    stopAll();
+    state.edit = true;
+    render();
+  }
+  function endEdit() {
+    const t = $('[data-field="title"]');
+    if (t) t.blur();
+    stopAll();
+    state.edit = false;
+    render();
+  }
 
   document.addEventListener('contextmenu', (e) => {
     if (!e.target.closest('input')) e.preventDefault();
@@ -1715,8 +1749,8 @@
     if (recCtl) recCtl.stop();
     if (hoer) return; // Hör-Modus bleibt offen (Bildschirm bleibt an)
     stopAll();
-    if (state.parent && !$('#overlay').innerHTML) {
-      state.parent = false;
+    if (state.edit && !$('#overlay').innerHTML) {
+      state.edit = false;
       render();
     }
   });

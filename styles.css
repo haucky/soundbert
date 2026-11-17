@@ -370,3 +370,31 @@ h1 { font-size: 26px; }
 .pick-grid .tile .label { font-size: 13px; line-height: 1.1; text-align: center; overflow-wrap: anywhere; }
 .pick-grid .tile.current { outline: 4px solid var(--ink); outline-offset: 2px; }
 @media (min-width: 480px) { .pick-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+
+/* ---------- Version 4: Bearbeiten per langem Drücken statt Eltern-Schloss ---------- */
+.done-btn {
+  height: 48px; padding: 0 18px; border: none; border-radius: 16px; background: var(--ink); color: #FFF;
+  font-size: 17px; font-weight: 900; flex-shrink: 0;
+}
+.tile-wrap, .scene { transition: transform .15s ease-out; }
+.tile-wrap.pressing, .scene.pressing { transform: scale(.95); transition: transform .5s ease-in; }
+.head.editing .overline::after { content: " · Bearbeiten"; }
+
+/* ---------- Version 5: eigene Namen, „Ohne Bild“ ---------- */
+.name-row { display: flex; gap: 10px; align-items: stretch; flex-shrink: 0; }
+.name-input {
+  flex: 1; min-width: 0; height: 56px; border: 3px solid var(--dash); border-radius: 18px; background: var(--card);
+  padding: 0 16px; font-size: 18px; font-weight: 800; color: var(--ink); user-select: text; -webkit-user-select: text;
+}
+.name-input:focus { outline: none; border-color: var(--play); }
+.name-row .btn { min-height: 56px; }
+.pick-hint { margin: 0 2px; }
+.pick-grid .tile.plain { border: 3px dashed var(--dash); box-shadow: none; }
+.tile .label { text-align: center; padding: 0 8px; line-height: 1.15; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
+.tile .label.long { font-size: 17px; }
+.scene-left { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; width: 96px; }
+.scene.voice .scene-left { width: auto; }
+.scene-name {
+  max-width: 100%; font-size: 13px; font-weight: 800; color: var(--muted); text-align: center; line-height: 1.15;
+  overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere;
+}

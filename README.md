@@ -14,17 +14,21 @@ Live: https://haucky.github.io/soundbert/
 
 ## Schneiden & Angleichen
 
-Jede Aufnahme wird automatisch geschnitten (Stille am Anfang/Ende; Knackser vom Drücken in den ersten 0,25 s bzw. letzten 0,2 s und kurze, abgesetzte Geräuschfetzen am Rand werden ignoriert) und in der Lautstärke angeglichen. Die **Originalaufnahme bleibt unverändert**; gespeichert werden nur Schnittpunkte und Verstärkung. Im Eltern-Modus ändert das Bild-Symbol auf einer Kachel das Bild (60 Bilder in 6 Gruppen); die Schere öffnet den Editor: Anfang und Ende auf der Wellenform verschieben, „Probehören“, „Automatisch“, „Alles“, „Bild ändern“, „Neu aufnehmen“. Ältere, nicht von Hand geschnittene Aufnahmen werden beim Start mit dem verbesserten Verfahren neu geschnitten.
+Jede Aufnahme wird automatisch geschnitten (Stille am Anfang/Ende; Knackser vom Drücken in den ersten 0,25 s bzw. letzten 0,2 s und kurze, abgesetzte Geräuschfetzen am Rand werden ignoriert) und in der Lautstärke angeglichen. Die **Originalaufnahme bleibt unverändert**; gespeichert werden nur Schnittpunkte und Verstärkung. In der Bearbeiten-Ansicht ändert das Bild-Symbol auf einer Kachel Name und Bild (60 Bilder in 6 Gruppen); die Schere öffnet den Editor: Anfang und Ende auf der Wellenform verschieben, „Probehören“, „Automatisch“, „Alles“, „Name & Bild“, „Neu aufnehmen“. Ältere, nicht von Hand geschnittene Aufnahmen werden beim Start mit dem verbesserten Verfahren neu geschnitten.
 
-## Teilen & Sichern (Eltern-Modus › ⋯)
+## Teilen & Sichern (oben ⋯)
 
 - **Geschichte als MP3**: wird im Browser gebaut (lamejs) und über das Android-Teilen-Menü verschickt (z. B. WhatsApp) oder heruntergeladen.
 - **Alles exportieren (ZIP)**: `metadata.json` (Bild, Art, Datum, Schnittpunkte, Verstärkung, Notizfeld) plus alle Originalaufnahmen in `audio/`.
 - **Sicherung laden**: fügt fehlende Aufnahmen hinzu; die Geschichte wird übernommen, wenn die aktuelle leer ist.
 
-## Eltern-Modus
+## Bearbeiten
 
-Das Schloss oben rechts **1,2 Sekunden gedrückt halten**. Dann lassen sich Geräusche schneiden, löschen oder neu aufnehmen, Bilder in der Geschichte verschieben oder herausnehmen, der Titel ändern und über ⋯ sichern und teilen. Antippen sperrt wieder; beim Verlassen der App sperrt es automatisch.
+**Lange auf ein Geräusch oder ein Bild der Geschichte drücken** (0,5 s) öffnet die Bearbeiten-Ansicht für alle Elemente: Name & Bild ändern, schneiden, neu aufnehmen, löschen, in der Geschichte verschieben oder herausnehmen, Titel ändern. **Fertig** beendet sie. Sichern und Teilen liegt immer oben unter ⋯. (Ein Kinderschloss gibt es nicht: Dem Kind wird das Handy nur im Hör-Modus gegeben.)
+
+## Eigene Namen
+
+Beim neuen Geräusch steht oben ein Namensfeld: erst Namen tippen (z. B. „Schokomuffin fällt“), dann ein Bild oder **Ohne Bild** wählen – die Aufnahme startet sofort. Ohne eigenen Namen gilt der Name des Bilds. Namen und Bilder lassen sich später unabhängig ändern („Nur Name“).
 
 ## Technik
 
